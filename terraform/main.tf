@@ -1,9 +1,8 @@
 terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
+  backend "s3" {
+    bucket = "nsntostorestatefiles"
+    key    = "svsstatefile/"
+    region = "ap-south-1"
   }
 }
 
