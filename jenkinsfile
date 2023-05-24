@@ -1,0 +1,126 @@
+#! groovy
+
+def projectName = 'svsRafiki'
+
+def devAccountId = "123456789012"
+def AWS_DEV_ENV = "dev"
+def DB_ACCOUNT_NAME_PREFIX = "Rafiki"
+
+def mainPath = "terraform"
+
+def tfGitRepoName = "UpdateGitRepo"
+def tfGitRepoBranch = "develop"
+
+def terraformVersion = "0.12.31"
+
+pipeline {
+agent any
+//{
+//    label 'linux'
+// kubernetes{
+// defaultContainer 'aws'
+// yaml '''apiVersion: v1
+// kind: Pod
+// metadata:
+//     labels:
+//         app: agent
+// spec:
+//     containers:
+//     -   name: aws
+//         image: blablablabla
+//         command:
+//         - cat
+//         tty: true
+// '''
+// }
+//}
+
+    //   options {
+    //     skipDefaultCheckout(true)
+    //     buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKepStr: '60'))
+    //   }
+    //   parameters {
+ 	  //      booleanParam(defaultValue: false, description: 'Check if Terraform Apply to be executed', name: 'Continue_To_Terraform_Apply')
+    //   }
+    //   environment {
+    //     Continue_To_Terraform_Apply: 'true'
+    //   }
+      
+      stages {
+stage('Checkout') {
+    steps {
+        script {
+        def gitCheckout = checkout ([
+         $class: 'GitSCM',
+         branches: [[name: "main"]],
+         doGenerateSubmoduleConfigurations: false,
+         extensions: [],
+         subModuleCfg: [],
+         userRemoteConfigs: [[
+            credentialsId: 'jenkins_office',
+            url: "https://github.com/NSaiNagendra/githubactionspoc.git"
+         ]]
+])
+}
+       }
+}
+
+        stage ("ZIP - Lambda Code") {
+            steps{
+                container("aws") {
+                dir("$mainPath") {
+                    script{
+                        sh """
+                            set +x
+				            if [ -d "lambda_functions"]; then
+                            cd lambda_functions
+                            pwd
+                            for d in *; do
+                                (cd "\$d" && pip install –r requirements.txt -t ./ && zip –r ../\$d.zip *); done
+                            ls –ltr
+                            else 
+                                echo “No Lambda Functions to zip or Please place the Lambda Functions inside 				     terraform/lambda_functions if any”
+                            fi
+                            """
+                        }
+                    }
+                }
+            }
+        }
+        stage ("Dev TF Init") {
+            steps{
+                dir("$mainPath") {
+      	        script{
+                sh  "pwd"
+                varsFile = "environments/$AWSDEV_ENV/vars.tfvars"
+                terraform.init("$lob", devAccountId, "$projectName", "$AWS_DEV_ENV", "$terraformVersion")
+                }
+            }
+        }
+    }
+        stage ("Dev TF Plan") {
+            steps{
+            dir("$mainPath") {
+                script{
+                sh "pwd"
+                terraform.plan(varsFile, “$AWS_DEV_ENV”)
+                }
+            }
+        }
+    }
+        stage ("Dev TF Apply") {
+            steps{
+            dir("$mainPath") {
+                script{
+                if(!params.Continue_to_Terraform_Apply){
+        	    echo "Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline."
+                } else {
+                    sh "pwd"
+                    terraform.apply(varsFile, "$AWS_DEV_ENV")
+                }
+            }
+        }
+    }
+}
+}
+}
