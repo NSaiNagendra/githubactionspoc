@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "nsntostorestatefiles"
-    key    = "svsstatefile/"
+    key    = "svsstatefile"
     region = "ap-south-1"
   }
 }
