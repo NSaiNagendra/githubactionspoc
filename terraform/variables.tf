@@ -1,2 +1,2 @@
-variable "ACCESS_KEY" {default = "${{secrets.ACCESS_KEY}}"}
-variable "SECRET_KEY" {default = "${{secrets.SECRET_KEY}}"}
+variable "ACCESS_KEY" {default = "AKIASER33NRWDKK7BFMM"}
+variable "SECRET_KEY" {default = ""}
