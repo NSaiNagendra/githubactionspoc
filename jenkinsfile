@@ -116,7 +116,7 @@ stage('Checkout') {
                 if (params.Continue_to_Terraform_Apply){
         	    echo "Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline."
                 } else {
-                    sh "terraform apply firstplan -auto-approve"
+                    sh "terraform apply -auto-approve firstplan"
                 }
             }
         }
