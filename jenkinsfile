@@ -72,7 +72,7 @@ stage('Checkout') {
                     script{
                         sh """
                             set +x
-				            if [ -d "lambda_functions"]; then
+				            if [ -d "lambda_functionss"]; then
                             cd lambda_functions
                             pwd
                             for d in *; do
@@ -91,9 +91,7 @@ stage('Checkout') {
             steps{
                 dir("$mainPath") {
       	        script{
-                sh  "pwd"
-                varsFile = "environments/$AWSDEV_ENV/vars.tfvars"
-                terraform.init("$lob", devAccountId, "$projectName", "$AWS_DEV_ENV", "$terraformVersion")
+                sh  "terraform inti"
                 }
             }
         }
@@ -102,8 +100,7 @@ stage('Checkout') {
             steps{
             dir("$mainPath") {
                 script{
-                sh "pwd"
-                terraform.plan(varsFile, “$AWS_DEV_ENV”)
+                sh "terraform plan -out=firstplan"
                 }
             }
         }
@@ -115,8 +112,7 @@ stage('Checkout') {
                 if(!params.Continue_to_Terraform_Apply){
         	    echo "Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline."
                 } else {
-                    sh "pwd"
-                    terraform.apply(varsFile, "$AWS_DEV_ENV")
+                    sh "terraform apply firstplan -auto-approve"
                 }
             }
         }
