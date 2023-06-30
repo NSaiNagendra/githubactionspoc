@@ -103,7 +103,7 @@ stage('Checkout') {
       	        script{
 		withCredentials([usernamePassword(credentialsId: 'svs-devops', passwordVariable: 'bi-devops-pw', usernameVariable: 'bi-devops-un')]) {
 		sh  '''
-		terraform init -backend-config="access_key=${bi-devops-un}" -backend-config="secret_key=${bi-devops-pw}" 
+		terraform init -backend-config="access_key=AKIASER33NRWDKK7BFMM" -backend-config="secret_key=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" 
 		'''
 				}               		
 		                }
