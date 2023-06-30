@@ -1,0 +1,81 @@
+#! groovy
+
+
+def mainPath = "terraform"
+
+pipeline {
+agent any
+//{
+//    label 'linux'
+// kubernetes{
+// defaultContainer 'aws'
+// yaml '''apiVersion: v1
+// kind: Pod
+// metadata:
+//     labels:
+//         app: agent
+// spec:
+//     containers:
+//     -   name: aws
+//         image: blablablabla
+//         command:
+//         - cat
+//         tty: true
+// '''
+// }
+//}
+
+       options {
+         skipDefaultCheckout(true)
+         buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
+       }
+       parameters {
+ 	        booleanParam(defaultValue: false, description: 'Check if Terraform Apply to be executed', name: 'Continue_To_Terraform_Apply')
+       }
+       environment {
+         Continue_To_Terraform_Apply = 'true'
+       }
+      
+      stages {
+stage('Checkout') {
+    steps {
+        script {
+        def gitCheckout = checkout ([
+         $class: 'GitSCM',
+         branches: [[name: "main"]],
+         doGenerateSubmoduleConfigurations: false,
+         extensions: [],
+         subModuleCfg: [],
+         userRemoteConfigs: [[
+            credentialsId: 'jenkins_office',
+            url: "https://github.com/NSaiNagendra/githubactionspoc.git"
+         ]]
+])
+}
+       }
+}
+
+        stage ("Databricks Init") {
+            steps{
+                dir("$mainPath") {
+                    script{
+                        sh """
+                            databricks --version
+                            """
+                        }
+                    }
+            }
+        }
+        stage ("Databricks Code Deploy") {
+            steps{
+            dir("$mainPath") {
+                script{
+                        sh """
+                            databricks --version
+                            """
+              }
+           }
+        }
+    }
+  }
+}
