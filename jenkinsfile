@@ -113,7 +113,7 @@ stage('Checkout') {
             steps{
             dir("$mainPath") {
                 script{
-                if (!params.Continue_to_Terraform_Apply){
+                if (params.Continue_to_Terraform_Apply = true){
         	    echo "Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline."
                 } else {
                     sh "terraform apply firstplan -auto-approve"
