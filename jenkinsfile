@@ -1,17 +1,7 @@
 #! groovy
 
-def projectName = 'svsRafiki'
-
-def devAccountId = "123456789012"
-def AWS_DEV_ENV = "dev"
-def DB_ACCOUNT_NAME_PREFIX = "Rafiki"
 
 def mainPath = "terraform"
-
-def tfGitRepoName = "UpdateGitRepo"
-def tfGitRepoBranch = "develop"
-
-def terraformVersion = "0.12.31"
 
 pipeline {
 agent any
@@ -37,7 +27,7 @@ agent any
 
        options {
          skipDefaultCheckout(true)
-         buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKepStr: '60'))
+         buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
        }
        parameters {
  	        booleanParam(defaultValue: false, description: 'Check if Terraform Apply to be executed', name: 'Continue_To_Terraform_Apply')
