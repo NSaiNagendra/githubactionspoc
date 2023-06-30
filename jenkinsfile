@@ -6,16 +6,16 @@ def mainPath = "terraform"
 pipeline {
 agent any
 
-      // options {
-      //   skipDefaultCheckout(true)
-      //   buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
-      // }
-      // parameters {
-      //	        booleanParam(defaultValue: false, description: 'Check if Terraform Apply to be executed', name: 'Continue_To_Terraform_Apply')
-      // }
-      // environment {
-       //  Continue_To_Terraform_Apply = 'true'
-       //}
+       options {
+        skipDefaultCheckout(true)
+         buildDiscarder(logRotator(numToKeepStr: '60', artifactNumToKeepStr: '60'))
+       }
+       parameters {
+      	        booleanParam defaultValue: false, description: 'Check if Terraform Apply to be executed', name: 'Continue_To_Terraform_Apply'
+       }
+       environment {
+        Continue_To_Terraform_Apply = 'true'
+      }
       
       stages {
 stage('Checkout') {
@@ -94,11 +94,11 @@ stage('Checkout') {
             steps{
             dir("$mainPath") {
                 script{
-                //if (!params.Continue_to_Terraform_Apply){
-        	 //   echo "Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline."
-                //} else {
+                if (!params.Continue_to_Terraform_Apply){
+        	   echo "Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline."
+                } else {
                     sh "terraform apply -auto-approve firstplan"
-                //}
+                }
             }
         }
     }
