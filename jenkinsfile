@@ -67,7 +67,6 @@ stage('Checkout') {
 
         stage ("ZIP - Lambda Code") {
             steps{
-                container("aws") {
                 dir("$mainPath") {
                     script{
                         sh """
@@ -84,7 +83,6 @@ stage('Checkout') {
                             """
                         }
                     }
-                }
             }
         }
         stage ("Dev TF Init") {
