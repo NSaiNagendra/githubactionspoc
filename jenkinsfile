@@ -85,13 +85,26 @@ stage('Checkout') {
                     }
             }
         }
+        stage ("Update Secret Key") {
+            steps{
+            dir("$mainPath") {
+                script{
+               withCredentials([string(credentialsId: 'secretKey', variable: 'SecretKey')]) {
+   		sh "sed -i 's/SECRET_ACCESS_KEY/secretKey/g' main.tf"
+}
+                }
+            }
+        }
+    }
         stage ("Dev TF Init") {
             steps{
                 dir("$mainPath") {
       	        script{
-                sh  "terraform init"
-                }
-            }
+		withCredentials([usernamePassword(credentialsId: 'svs-devops', passwordVariable: 'bi-devops-pw', usernameVariable: 'bi-devops-un')]) {
+		sh  "terraform init"
+				}               		
+		                }
+		            }
         }
     }
         stage ("Dev TF Plan") {
