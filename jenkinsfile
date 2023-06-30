@@ -90,7 +90,7 @@ stage('Checkout') {
             dir("$mainPath") {
                 script{
                withCredentials([string(credentialsId: 'secretKey', variable: 'SecretKey')]) {
-   		sh "sed -i 's/SECRET_ACCESS_KEY/SecretKey/g' main.tf"
+   		sh "sed -i 's/SECRET_ACCESS_KEY/${SecretKey}/g' main.tf"
 		sh "cat main.tf"
 }
                 }
