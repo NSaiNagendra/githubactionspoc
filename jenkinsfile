@@ -89,7 +89,7 @@ stage('Checkout') {
             steps{
                 dir("$mainPath") {
       	        script{
-                sh  "terraform inti"
+                sh  "terraform init"
                 }
             }
         }
