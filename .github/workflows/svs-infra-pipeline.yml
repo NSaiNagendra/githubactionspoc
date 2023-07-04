@@ -1,0 +1,99 @@
+name: svs/svs-infra-pipeline
+on:
+  workflow_dispatch:
+env:
+  Continue_To_Terraform_Apply: 'true'
+jobs:
+  Checkout:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             def gitCheckout = checkout ([
+#                      $class: 'GitSCM',
+#                      branches: [[name: "main"]],
+#                      doGenerateSubmoduleConfigurations: false,
+#                      extensions: [],
+#                      subModuleCfg: [],
+#                      userRemoteConfigs: [[
+#                         credentialsId: 'jenkins_office',
+#                         url: "https://github.com/NSaiNagendra/githubactionspoc.git"
+#                      ]]
+#             ])
+  ZIP_Lambda_Code:
+    name: ZIP - Lambda Code
+    runs-on: ubuntu-latest
+    needs: Checkout
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: "sh \"\"\"\n                            set +x\n\t\t\t\t            if [ -d \"lambda_functionss\"]; then\n                            cd lambda_functions\n                            pwd\n                            for d in *; do\n                                (cd \"\\$d\" && pip install â\x80\x93r requirements.txt -t ./ && zip â\x80\x93r ../\\$d.zip *); done\n                            ls â\x80\x93ltr\n                            else \n                                echo â\x80\x9CNo Lambda Functions to zip or Please place the Lambda Functions inside \t\t\t\t     terraform/lambda_functions if anyâ\x80\x9D\n                            fi\n                            \"\"\""
+  Update_Secret_Key:
+    name: Update Secret Key
+    runs-on: ubuntu-latest
+    needs: ZIP_Lambda_Code
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: "withCredentials([string(credentialsId: 'secretKey', variable: 'SecretKey')]) {\n   \t\tsh \"sed -i 's/SECRET_ACCESS_KEY/${{ env.SecretKey }}/g' main.tf\"\n\t\tsh \"cat main.tf\"\n}"
+  Dev_TF_Init:
+    name: Dev TF Init
+    runs-on: ubuntu-latest
+    needs: Update_Secret_Key
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: "withCredentials([usernamePassword(credentialsId: \"svs-devops\", passwordVariable: \"bidevopspw\", usernameVariable: \"bidevopsun\")]) {\n\t\tsh  '''\n\t\tterraform init -backend-config=\"access_key=${{ env.bidevopsun }}\" -backend-config=\"secret_key=${{ env.bidevopspw }}\" \n\t\t'''\n\t\t\t\t}"
+  Dev_TF_Plan:
+    name: Dev TF Plan
+    runs-on: ubuntu-latest
+    needs: Dev_TF_Init
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: sh "terraform plan -out=firstplan"
+  Dev_TF_Apply:
+    name: Dev TF Apply
+    runs-on: ubuntu-latest
+    needs: Dev_TF_Plan
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: "if (params.Continue_to_Terraform_Apply == true){\n        \t   echo \"Continue_to_Terraform_Apply flag detected as false. Skipping rest of Pipeline.\"\n                } else {\n                    sh \"terraform apply -auto-approve firstplan\"\n                }"
