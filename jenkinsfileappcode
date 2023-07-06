@@ -1,7 +1,7 @@
 #! groovy
 
 
-def mainPath = "terraform"
+def mainPath = "python"
 
 pipeline {
 agent any
@@ -71,7 +71,8 @@ stage('Checkout') {
             dir("$mainPath") {
                 script{
                         sh """
-                            databricks --version
+                            databricks workspace ls
+                            databricksworkspace import_dir . /Users/snyamatabad@gmail.com/dev
                             """
               }
            }
