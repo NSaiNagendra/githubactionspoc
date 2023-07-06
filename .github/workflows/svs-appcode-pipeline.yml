@@ -1,0 +1,64 @@
+name: svs/svs-appcode-pipeline
+on:
+  workflow_dispatch:
+env:
+  Continue_To_Terraform_Apply: 'true'
+jobs:
+  Checkout:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             def gitCheckout = checkout ([
+#                      $class: 'GitSCM',
+#                      branches: [[name: "main"]],
+#                      doGenerateSubmoduleConfigurations: false,
+#                      extensions: [],
+#                      subModuleCfg: [],
+#                      userRemoteConfigs: [[
+#                         credentialsId: 'jenkins_office',
+#                         url: "https://github.com/NSaiNagendra/githubactionspoc.git"
+#                      ]]
+#             ])
+  Databricks_Init:
+    name: Databricks Init
+    runs-on: ubuntu-latest
+    needs: Checkout
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             sh """
+#                                         databricks --version
+#                                         """
+  Databricks_Code_Deploy:
+    name: Databricks Code Deploy
+    runs-on: ubuntu-latest
+    needs: Databricks_Init
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3.5.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             sh """
+#                                         databricks workspace ls
+#                                         databricksworkspace import_dir . /Users/snyamatabad@gmail.com/dev
+#                                         """
